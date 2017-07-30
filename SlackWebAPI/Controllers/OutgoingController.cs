@@ -13,56 +13,30 @@ namespace SlackWebAPI.Controllers
 {
     public class OutgoingController : ApiController
     {
+        HttpStatusCode code = HttpStatusCode.OK;
+
         public HttpResponseMessage Post(SlackOutgoingContent query)
         {
-            // 找出內容
-            string strContent = query.text;
-            strContent = strContent.Replace("賈維斯", "");
-            strContent = strContent.Replace(" ", "");
+            string strReplyMessage = $"你輸入的訊息是{query.text}";
+            string strResult = "";
 
-            string strReply = "";
-
-            // 找出指令
-            if (strContent.Contains("網路速度"))
+            // 呼叫回送至Slack的function
+            try
             {
-                strReply = "網路速度的偵測還沒作好喔";
-            }
-
-            if (strContent.Contains("你好") || strContent.Contains("安安") || strContent.ToLower().Contains("hi"))
-            {
-                strReply = "你好，今天過得安好順利嗎?";
-            }
-
-            if (strReply != "")
-            {
-
                 SlackMessageQuery objReply = new SlackMessageQuery()
                 {
-                    text = strReply,
+                    text = strReplyMessage,
                 };
 
-                string strResult = new SlackMessageObj().SendMessage(objReply);
-                return Request.CreateResponse(HttpStatusCode.OK, strResult);
+                strResult = new SlackMessageObj().SendMessage(objReply);
             }
-            else
+            catch (Exception e)
             {
-                return Request.CreateResponse(HttpStatusCode.NoContent, "");
+                code = HttpStatusCode.BadRequest;
             }
-        }
+            // 找出內容
 
-
-        public class SlackOutgoingContent
-        {
-            public string token { get; set; }
-            public string team_id { get; set; }
-            public string team_domain { get; set; }
-            public string channel_id { get; set; }
-            public string channel_name { get; set; }
-            public string    timestamp { get; set; }
-            public string user_id { get; set; }
-            public string username { get; set; }
-            public string text { get; set; }
-            public string trigger_word { get; set; }
+            return Request.CreateResponse(HttpStatusCode.OK, strResult);
         }
     }
 }

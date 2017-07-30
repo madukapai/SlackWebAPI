@@ -17,7 +17,7 @@ namespace SlackWebAPI
 
         public string SendMessage(SlackMessageQuery query)
         {
-            string strUrl = "https://hooks.slack.com/services/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";
+            string strUrl = "[Slack incomeing Web Hook Url]";
             string strResult = this.CallAPI(strUrl, "POST", JsonConvert.SerializeObject(query), out code);
 
             return strResult;
